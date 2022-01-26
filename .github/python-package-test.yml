@@ -1,11 +1,12 @@
 name: Python package
 
 on:
-  release:
-    types: [published]
+  push:
+    branches:    
+      - 'master'
 
 jobs:
-  publish:
+  publish_test:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
@@ -29,6 +30,7 @@ jobs:
       - name: Publish
         shell: bash
         env:
-          SUPER_SECRET: ${{ secrets.PYPI_TOKEN }}
+          SUPER_SECRET: ${{ secrets.PYPI_TEST_TOKEN }}
         run: |
-          poetry publish -u __token__ -p ${{ secrets.PYPI_TOKEN }}
+          poetry config repositories.test-pypi https://test.pypi.org/legacy/
+          poetry publish -r test-pypi -u __token__ -p ${{ secrets.PYPI_TEST_TOKEN }}
