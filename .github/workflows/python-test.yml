@@ -4,7 +4,6 @@
 name: Python test & build
 
 on:
-  push:
   pull_request:
     branches: [master]
 
