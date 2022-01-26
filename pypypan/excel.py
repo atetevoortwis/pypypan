@@ -42,8 +42,12 @@ def read_pattypan_input(filename: Path) -> List[CommonsItem]:
     except ValueError:
         raise ValueError(f"Sheet 'Template' not found in {filename}")
 
+
     try:
         tpl = tpl.columns[0]
+        # Replace brackets
+        tpl=tpl.replace("{{","{{{{")
+        tpl=tpl.replace("}}","}}}}")
     except ValueError:
         raise ValueError(f"Cell A1 not found in {filename}")
 
@@ -54,15 +58,15 @@ def read_pattypan_input(filename: Path) -> List[CommonsItem]:
 
     items = []
     for i, row in data.iterrows():
-        if not Path(row.path).exists:
-            raise FileNotFoundError("File {filename} does not exist")
+        if not Path(row['path']).exists():
+            raise FileNotFoundError(f"File {row['path']} does not exist")
         tpl_values = {}
         for col in data.columns:
             if col in allowed_missing_columns:
                 continue
             tpl_values[col] = row[col]
-        items.append(CommonsItem(path=Path(row.path),
+        items.append(CommonsItem(path=Path(row['path']),
                                  description=tpl.replace(
                                      "${", "{").format(**tpl_values),
-                                 title=row.name))
+                                 title=row['name']))
     return items
