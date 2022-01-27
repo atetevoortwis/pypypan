@@ -7,7 +7,7 @@ site = pywikibot.Site('commons:commons')
 test_site = pywikibot.Site('commons:test')
 
 
-def upload_image(item: CommonsItem, update_existing: bool = False) -> False:
+def upload_image(item: CommonsItem, site: pywikibot.Site, update_existing: bool = False) -> False:
     imagepage = pywikibot.FilePage(site, item.title)
     imagepage.text = item.description
     try:
@@ -27,17 +27,20 @@ def upload_image(item: CommonsItem, update_existing: bool = False) -> False:
         raise e
 
 
-def upload_pattypan_excel(filename: Path, update_existing: bool = False, max_uploads: int = -1):
+def upload_pattypan_excel(filename: Path, update_existing: bool = False, max_uploads: int = -1, use_test_commons: bool = True):
     try:
         items = read_pattypan_input(filename)
     except Exception as e:
         logging.error(e)
         return
-
+    if use_test_commons:        
+        site = pywikibot.Site('commons:test')
+    else:
+        site = pywikibot.Site('commons:commons')
     n = 0
     for item in items:
-        logging.info(f"Uploading {item.title}")
-        if upload_image(item, update_existing=update_existing):
+        logging.info(f"Uploading {item.title} to {site}")
+        if upload_image(item, update_existing=update_existing, site=site):
             n = n+1
         else:
             logging.error(f"Failed uploading {item.title} / {item.path.name}")

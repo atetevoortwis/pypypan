@@ -1,6 +1,6 @@
 from pathlib import Path
-from pypypan.upload import upload_pattypan_excel, generate_pattypan_excel
-from pypypan.excel import read_pattypan_input
+from pypypan.upload import upload_pattypan_excel
+from pypypan.excel import read_pattypan_input, generate_pattypan_excel
 import typer
 import pywikibot  # noqa: F401
 import logging
@@ -29,15 +29,15 @@ app = typer.Typer()
 
 @app.command()
 def upload(excel_file: Path, update_existing: bool = False,
-           test_one: bool = False):
+           test_one: bool = False, use_test_commons: bool = False):
     """
     Upload an excel file that is filled according to the Pattypan format.
     """
     if test_one:
         upload_pattypan_excel(
-            excel_file, update_existing=update_existing, max_uploads=1)
+            excel_file, update_existing=update_existing, max_uploads=1, use_test_commons=use_test_commons)
     else:
-        upload_pattypan_excel(excel_file, update_existing=update_existing)
+        upload_pattypan_excel(excel_file, update_existing=update_existing, use_test_commons=use_test_commons)
 
 
 @app.command()
