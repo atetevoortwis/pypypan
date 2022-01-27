@@ -18,7 +18,7 @@ def generate_pattypan_excel(excel_file: Path, image_dir: Path):
     pass
 
 
-def read_pattypan_input(filename: Path) -> List[CommonsItem]:
+def read_pattypan_input(filename: Path, allow_missing_files: bool = True) -> List[CommonsItem]:
     """
     Reads an Excel file following the Pattypan format:
         (https://commons.wikimedia.org/wiki/Commons:Pattypan/Simple_manual)
@@ -77,13 +77,22 @@ def read_pattypan_input(filename: Path) -> List[CommonsItem]:
             if rawpath.exists():
                 path = rawpath
             else:
-                raise FileNotFoundError(f"File {row['path']} does not exist")
+                if allow_missing_files:
+                    path = rawpath
+                else:
+                    raise FileNotFoundError(f"File {row['path']} does not exist")
         elif (filename.parent / rawpath).exists():
             path = filename.parent / rawpath
         elif (Path.cwd() / rawpath).exists():
             path = Path.cwd() / rawpath
         else:
-            raise FileNotFoundError(f"File {row['path']} does not exist")
+            if rawpath.exists():
+                path = rawpath
+            else:
+                if allow_missing_files:
+                    path = rawpath
+                else:
+                    raise FileNotFoundError(f"File {row['path']} does not exist")
 
         tpl_values = {}
         for col in data.columns:
