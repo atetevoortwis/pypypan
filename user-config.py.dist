@@ -1,0 +1,16 @@
+usernames['commons']['*'] = u'MyUsername'
+# Go to https://meta.wikimedia.org/wiki/Special:OAuthConsumerRegistration/propose
+# Fill in tokens and secrets below
+authenticate['commons.wikimedia.org'] = ('my_consumer_token', 
+'my_consumer_secret',
+ 'my_access_token', 
+ 'my_access_secret')
+
+authenticate['test-commons.wikimedia.org'] = ('my_consumer_token', 
+'my_consumer_secret', 
+'my_access_token', 
+'my_access_secret')
+
+console_encoding = 'utf-8'
+put_throttle = 0
+log = []
