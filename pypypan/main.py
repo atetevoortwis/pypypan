@@ -1,11 +1,11 @@
-
-
 from pathlib import Path
-from pypypan.upload import upload_pattypan_excel
+from pypypan.upload import upload_pattypan_excel, generate_pattypan_excel
 from pypypan.excel import read_pattypan_input
 import typer
-import pywikibot
+import pywikibot  # noqa: F401
 import logging
+
+
 # TODO: Cleanup logging, put in config
 logging.getLogger().setLevel(logging.INFO)
 logger = logging.getLogger("main")
@@ -49,7 +49,7 @@ def generate_excel(excel_file: Path = Path("./data.xls"), image_dir: Path = Path
     if excel_file.exists():
         raise(FileExistsError(f"Excel file {excel_file} already exists"))
 
-    generate_pattypan_excel(excel_file)
+    generate_pattypan_excel(excel_file, image_dir)
 
 
 @app.command()

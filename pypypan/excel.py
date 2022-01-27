@@ -11,6 +11,13 @@ class CommonsItem:
     path: Path
 
 
+def generate_pattypan_excel(excel_file: Path, image_dir: Path):
+    """
+    Function that generates a Pattypan Excel file that contains the images from image_dir
+    """
+    pass
+
+
 def read_pattypan_input(filename: Path) -> List[CommonsItem]:
     """
     Reads an Excel file following the Pattypan format:
@@ -42,12 +49,11 @@ def read_pattypan_input(filename: Path) -> List[CommonsItem]:
     except ValueError:
         raise ValueError(f"Sheet 'Template' not found in {filename}")
 
-
     try:
         tpl = tpl.columns[0]
         # Replace brackets
-        tpl=tpl.replace("{{","{{{{")
-        tpl=tpl.replace("}}","}}}}")
+        tpl = tpl.replace("{{", "{{{{")
+        tpl = tpl.replace("}}", "}}}}")
     except ValueError:
         raise ValueError(f"Cell A1 not found in {filename}")
 
@@ -58,14 +64,33 @@ def read_pattypan_input(filename: Path) -> List[CommonsItem]:
 
     items = []
     for i, row in data.iterrows():
-        if not Path(row['path']).exists():
+        """
+        There are three options for the file path:
+        - Absolute
+        - Relative to Pattypan excel location
+        - Relative to current working dir
+        All of these are checked (in this order) and if one of them exists, it is used.
+        """
+        rawpath = Path(row['path'])
+        if rawpath.is_absolute():
+            # If it is an absolute path, it should exist:
+            if rawpath.exists():
+                path = rawpath
+            else:
+                raise FileNotFoundError(f"File {row['path']} does not exist")
+        elif (filename.parent / rawpath).exists():
+            path = filename.parent / rawpath
+        elif (Path.cwd() / rawpath).exists():
+            path = Path.cwd() / rawpath
+        else:
             raise FileNotFoundError(f"File {row['path']} does not exist")
+
         tpl_values = {}
         for col in data.columns:
             if col in allowed_missing_columns:
                 continue
             tpl_values[col] = row[col]
-        items.append(CommonsItem(path=Path(row['path']),
+        items.append(CommonsItem(path=path,
                                  description=tpl.replace(
                                      "${", "{").format(**tpl_values),
                                  title=row['name']))

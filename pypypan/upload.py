@@ -6,6 +6,7 @@ from pypypan.excel import read_pattypan_input, CommonsItem
 site = pywikibot.Site('commons:commons')
 test_site = pywikibot.Site('commons:test')
 
+
 def upload_image(item: CommonsItem, update_existing: bool = False) -> False:
     imagepage = pywikibot.FilePage(site, item.title)
     imagepage.text = item.description
@@ -24,6 +25,7 @@ def upload_image(item: CommonsItem, update_existing: bool = False) -> False:
     except Exception as e:
         logging.exception(e)
         raise e
+
 
 def upload_pattypan_excel(filename: Path, update_existing: bool = False, max_uploads: int = -1):
     try:
