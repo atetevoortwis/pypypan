@@ -56,9 +56,9 @@ def generate_excel(excel_file: Path = Path("./data.xls"), image_dir: Path = Path
 def test_template(excel_file: Path):
     """
     Parse a template and use the first file to generate the description.
-    For testing purposes
+    For testing purposes, so files listed in the Excel are not checked for existence.
     """
-    items = read_pattypan_input(excel_file)
+    items = read_pattypan_input(excel_file, allow_missing_files=True)
     print(items[0].description)
 
 
