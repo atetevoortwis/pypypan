@@ -1,4 +1,4 @@
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
 import pandas as pd
 from typing import List
 from dataclasses import dataclass
@@ -18,7 +18,7 @@ def generate_pattypan_excel(excel_file: Path, image_dir: Path):
     pass
 
 
-def read_pattypan_input(filename: Path, allow_missing_files: bool = True) -> List[CommonsItem]:
+def read_pattypan_input(filename: Path, allow_missing_files: bool = False) -> List[CommonsItem]:
     """
     Reads an Excel file following the Pattypan format:
         (https://commons.wikimedia.org/wiki/Commons:Pattypan/Simple_manual)
@@ -71,7 +71,10 @@ def read_pattypan_input(filename: Path, allow_missing_files: bool = True) -> Lis
         - Relative to current working dir
         All of these are checked (in this order) and if one of them exists, it is used.
         """
-        rawpath = Path(row['path'])
+        if '\\' in row['path']:
+            rawpath = PureWindowsPath(row['path'])
+        else:
+            rawpath = PurePosixPath(row['path'])
         if rawpath.is_absolute():
             # If it is an absolute path, it should exist:
             if rawpath.exists():
