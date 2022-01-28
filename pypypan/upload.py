@@ -6,9 +6,11 @@ from pypypan.excel import read_pattypan_input, CommonsItem
 site = pywikibot.Site('commons:commons')
 test_site = pywikibot.Site('commons:test')
 
+def sanitize_title(title: str) -> str:
+    return title.replace("''","'")
 
-def upload_image(item: CommonsItem, site: pywikibot.Site, update_existing: bool = False) -> False:
-    imagepage = pywikibot.FilePage(site, item.title)
+def upload_image(item: CommonsItem, site: pywikibot.Site, update_existing: bool = False, dry_run: bool = False) -> False:
+    imagepage = pywikibot.FilePage(site, sanitize_title(item.title))
     imagepage.text = item.description
     try:
         if imagepage.exists():
@@ -16,18 +18,23 @@ def upload_image(item: CommonsItem, site: pywikibot.Site, update_existing: bool 
                 item.path.name, str(site)))
             if update_existing:
                 logging.info(f"Updating description of {item.path.name}")
-                imagepage.save("update")
+                if not dry_run:
+                    imagepage.save("update")
                 return True
             else:
                 return False
-        return site.upload(filepage=imagepage, source_filename=item.path, report_success=False)
+        else:
+            if dry_run:
+                return True
+            else:
+                return site.upload(filepage=imagepage, source_filename=item.path, ignore_warnings=True)
 
     except Exception as e:
         logging.exception(e)
         raise e
 
 
-def upload_pattypan_excel(filename: Path, update_existing: bool = False, max_uploads: int = -1, use_test_commons: bool = True):
+def upload_pattypan_excel(filename: Path, update_existing: bool = False, max_uploads: int = -1, use_test_commons: bool = True, dry_run: bool = False):
     try:
         items = read_pattypan_input(filename)
     except Exception as e:
@@ -40,9 +47,10 @@ def upload_pattypan_excel(filename: Path, update_existing: bool = False, max_upl
     n = 0
     for item in items:
         logging.info(f"Uploading {item.title} to {site}")
-        if upload_image(item, update_existing=update_existing, site=site):
+        if upload_image(item, update_existing=update_existing, site=site, dry_run=dry_run):
             n = n+1
         else:
             logging.error(f"Failed uploading {item.title} / {item.path.name}")
-        if n >= max_uploads:
+        if n >= max_uploads and max_uploads > 0:
+            logging.info("Did {} out of {} maximum uploads".format(n, max_uploads))
             return

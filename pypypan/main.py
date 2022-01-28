@@ -28,16 +28,16 @@ app = typer.Typer()
 
 
 @app.command()
-def upload(excel_file: Path, update_existing: bool = False,
+def upload(excel_file: Path, update_existing: bool = False, dry_run: bool = False,
            test_one: bool = False, use_test_commons: bool = False):
     """
     Upload an excel file that is filled according to the Pattypan format.
     """
     if test_one:
         upload_pattypan_excel(
-            excel_file, update_existing=update_existing, max_uploads=1, use_test_commons=use_test_commons)
+            excel_file, update_existing=update_existing, max_uploads=1, use_test_commons=use_test_commons, dry_run=dry_run)
     else:
-        upload_pattypan_excel(excel_file, update_existing=update_existing, use_test_commons=use_test_commons)
+        upload_pattypan_excel(excel_file, update_existing=update_existing, use_test_commons=use_test_commons, dry_run=dry_run)
 
 
 @app.command()
@@ -61,6 +61,14 @@ def test_template(excel_file: Path):
     items = read_pattypan_input(excel_file, allow_missing_files=True)
     print(items[0].description)
 
+@app.command()
+def version():
+    """ 
+    Print the pypypan version number.
+    Run pip3 install --upgrade pypypan to udpate.
+    """
+    import importlib.metadata
+    print(importlib.metadata.version('pypypan'))
 
 def main():
     app()
