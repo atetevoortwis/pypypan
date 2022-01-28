@@ -6,8 +6,11 @@ from pypypan.excel import read_pattypan_input, CommonsItem
 site = pywikibot.Site('commons:commons')
 test_site = pywikibot.Site('commons:test')
 
+
 def sanitize_title(title: str) -> str:
-    return title.replace("''","'")
+    # Remove double apostrophes: https://commons.wikimedia.org/wiki/MediaWiki:Titleblacklist-custom-double-apostrophe
+    return title.replace("''", "'")
+
 
 def upload_image(item: CommonsItem, site: pywikibot.Site, update_existing: bool = False, dry_run: bool = False) -> False:
     imagepage = pywikibot.FilePage(site, sanitize_title(item.title))
@@ -34,13 +37,14 @@ def upload_image(item: CommonsItem, site: pywikibot.Site, update_existing: bool 
         raise e
 
 
-def upload_pattypan_excel(filename: Path, update_existing: bool = False, max_uploads: int = -1, use_test_commons: bool = True, dry_run: bool = False):
+def upload_pattypan_excel(filename: Path, update_existing: bool = False, max_uploads: int = -1,
+                          use_test_commons: bool = True, dry_run: bool = False):
     try:
         items = read_pattypan_input(filename)
     except Exception as e:
         logging.error(e)
         return
-    if use_test_commons:        
+    if use_test_commons:
         site = pywikibot.Site('commons:test')
     else:
         site = pywikibot.Site('commons:commons')
@@ -52,5 +56,6 @@ def upload_pattypan_excel(filename: Path, update_existing: bool = False, max_upl
         else:
             logging.error(f"Failed uploading {item.title} / {item.path.name}")
         if n >= max_uploads and max_uploads > 0:
-            logging.info("Did {} out of {} maximum uploads".format(n, max_uploads))
+            logging.info(
+                "Did {} out of {} maximum uploads".format(n, max_uploads))
             return

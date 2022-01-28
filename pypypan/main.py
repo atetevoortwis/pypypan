@@ -61,14 +61,16 @@ def test_template(excel_file: Path):
     items = read_pattypan_input(excel_file, allow_missing_files=True)
     print(items[0].description)
 
+
 @app.command()
 def version():
-    """ 
+    """
     Print the pypypan version number.
     Run pip3 install --upgrade pypypan to udpate.
     """
     import importlib.metadata
     print(importlib.metadata.version('pypypan'))
+
 
 def main():
     app()
