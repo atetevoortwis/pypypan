@@ -101,7 +101,15 @@ def read_pattypan_input(filename: Path, allow_missing_files: bool = False) -> Li
         for col in data.columns:
             if col in allowed_missing_columns:
                 continue
-            tpl_values[col] = row[col]
+            if col == 'category':
+                # Special case: expand categories
+                if ";" in row[col]:
+                    categories = row[col].split(";")
+                    tpl_values[col] = "]]\r\n[[Category:".join(categories)
+                else:
+                    tpl_values[col] = row[col]
+            else:
+                tpl_values[col] = row[col]
         items.append(CommonsItem(path=path,
                                  description=tpl.replace(
                                      "${", "{").format(**tpl_values),
