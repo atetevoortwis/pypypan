@@ -17,14 +17,14 @@ def upload_image(item: CommonsItem, site: pywikibot.Site, update_existing: bool 
     imagepage.text = item.description
     try:
         if imagepage.exists():
-            logging.error("File {} exists on {}".format(
-                item.path.name, str(site)))
             if update_existing:
                 logging.info(f"Updating description of {item.path.name}")
                 if not dry_run:
                     imagepage.save("update")
                 return True
             else:
+                logging.info("File {} exists on {}, updating".format(
+                    item.path.name, str(site)))
                 return False
         else:
             if dry_run:
