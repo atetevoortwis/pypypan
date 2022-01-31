@@ -89,13 +89,10 @@ def read_pattypan_input(filename: Path, allow_missing_files: bool = False) -> Li
         elif (Path.cwd() / rawpath).exists():
             path = Path.cwd() / rawpath
         else:
-            if rawpath.exists():
+            if allow_missing_files:
                 path = rawpath
             else:
-                if allow_missing_files:
-                    path = rawpath
-                else:
-                    raise FileNotFoundError(f"File {row['path']} does not exist")
+                raise FileNotFoundError(f"File {row['path']} does not exist")
 
         tpl_values = {}
         for col in data.columns:
