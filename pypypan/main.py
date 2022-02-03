@@ -29,15 +29,16 @@ app = typer.Typer()
 
 @app.command()
 def upload(excel_file: Path, update_existing: bool = False, dry_run: bool = False,
-           test_one: bool = False, use_test_commons: bool = False):
+           test_one: bool = False, use_test_commons: bool = False, allow_missing_files: bool = False):
     """
     Upload an excel file that is filled according to the Pattypan format.
     """
     if test_one:
-        upload_pattypan_excel(
-            excel_file, update_existing=update_existing, max_uploads=1, use_test_commons=use_test_commons, dry_run=dry_run)
+        upload_pattypan_excel(excel_file, update_existing=update_existing, max_uploads=1,
+                              allow_missing_files=allow_missing_files, use_test_commons=use_test_commons, dry_run=dry_run)
     else:
-        upload_pattypan_excel(excel_file, update_existing=update_existing, use_test_commons=use_test_commons, dry_run=dry_run)
+        upload_pattypan_excel(excel_file, update_existing=update_existing,
+                              allow_missing_files=allow_missing_files, use_test_commons=use_test_commons, dry_run=dry_run)
 
 
 @app.command()

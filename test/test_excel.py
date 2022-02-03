@@ -20,3 +20,7 @@ def test_read_valid_excel(prepare_test_data):
 def test_read_not_existing_excel():
     with pytest.raises(FileNotFoundError):
         excel.read_pattypan_input(BASE_PATH / "./data/data_testabc.xls")
+        
+def test_read_not_existing_file():
+    with pytest.raises(FileNotFoundError):
+        excel.read_pattypan_input(BASE_PATH / "./data/data_test_error.xls")

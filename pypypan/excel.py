@@ -1,7 +1,8 @@
-from pathlib import Path, PurePosixPath, PureWindowsPath
+from pathlib import Path
 import pandas as pd
 from typing import List
 from dataclasses import dataclass
+import logging
 
 
 @dataclass
@@ -71,31 +72,22 @@ def read_pattypan_input(filename: Path, allow_missing_files: bool = False) -> Li
         - Relative to current working dir
         All of these are checked (in this order) and if one of them exists, it is used.
         """
-        if '\\' in row['path']:
-            rawpath = PureWindowsPath(row['path'])
-        else:
-            rawpath = PurePosixPath(row['path'])
+        # TODO: check if this is ok
+        # Convert backslashes to forward, since both POSIX and Windows handle the latter well
+        rawpath = Path(row['path'].replace('\\', '/'))
         if rawpath.is_absolute():
-            # If it is an absolute path, it should exist:
-            if rawpath.exists():
-                path = rawpath
-            else:
-                if allow_missing_files:
-                    path = rawpath
-                else:
-                    raise FileNotFoundError(f"File {row['path']} does not exist")
+            path = rawpath
         elif (filename.parent / rawpath).exists():
             path = filename.parent / rawpath
         elif (Path.cwd() / rawpath).exists():
             path = Path.cwd() / rawpath
         else:
-            if rawpath.exists():
-                path = rawpath
+            path = rawpath
+        if not path.exists():
+            if allow_missing_files:
+                logging.error(f"File {row['path']} does not exist")
             else:
-                if allow_missing_files:
-                    path = rawpath
-                else:
-                    raise FileNotFoundError(f"File {row['path']} does not exist")
+                raise FileNotFoundError(f"File {row['path']} does not exist")
 
         tpl_values = {}
         for col in data.columns:
