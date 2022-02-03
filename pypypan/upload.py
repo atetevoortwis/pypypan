@@ -38,9 +38,9 @@ def upload_image(item: CommonsItem, site: pywikibot.Site, update_existing: bool 
 
 
 def upload_pattypan_excel(filename: Path, update_existing: bool = False, max_uploads: int = -1,
-                          use_test_commons: bool = True, dry_run: bool = False):
+                          use_test_commons: bool = True, dry_run: bool = False, allow_missing_files: bool = False):
     try:
-        items = read_pattypan_input(filename)
+        items = read_pattypan_input(filename, allow_missing_files=allow_missing_files)
     except Exception as e:
         logging.error(e)
         return
