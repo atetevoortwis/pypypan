@@ -38,7 +38,7 @@ def read_pattypan_input(filename: Path, allow_missing_files: bool = False) -> Li
     which hold a title, a description and a path to the file to upload.
     """
     if not filename.exists():
-        raise FileNotFoundError("File {filename} does not exist")
+        raise FileNotFoundError(f"File {filename} does not exist")
 
     try:
         data = pd.read_excel(filename, sheet_name='Data')
@@ -88,6 +88,8 @@ def read_pattypan_input(filename: Path, allow_missing_files: bool = False) -> Li
                 logging.error(f"File {row['path']} does not exist")
             else:
                 raise FileNotFoundError(f"File {row['path']} does not exist")
+        else:
+            logging.debug("File exists: {}".format(path))
 
         tpl_values = {}
         for col in data.columns:

@@ -17,7 +17,6 @@ fh.setLevel(logging.DEBUG)
 logging.getLogger().addHandler(fh)
 
 stdout_handler = logging.StreamHandler()
-stdout_handler.setLevel(logging.INFO)
 stdout_handler.setFormatter(formatter)
 stdout_handler.setFormatter(formatter)
 logging.getLogger().addHandler(stdout_handler)
@@ -72,10 +71,17 @@ def version():
     import importlib.metadata
     print(importlib.metadata.version('pypypan'))
 
+@app.callback()
+def mainapp(verbose: bool = False):
+    """
+    Upload images to Wikimedia Commons from a simple Excel file.
+    """
+    if verbose:
+        logging.getLogger().setLevel(logging.DEBUG)
+        logger.debug("Enabled verbose logging")
 
 def main():
     app()
-
 
 if __name__ == "__main__":
     main()
