@@ -1,6 +1,7 @@
 from pypypan import upload
 from helper_functions import generate_random_image
 import pathlib
+import pywikibot
 import pytest
 from PIL import Image
 BASE_PATH = pathlib.Path(__file__).parent
@@ -32,9 +33,29 @@ def test_sha1hash():
 
 
 def test_check_if_image_exists(prepare_test_data):
-    exists, name = upload.check_if_image_exists(BASE_PATH / "data" / "honda.jpeg")
+    exists, name = upload.check_if_image_exists(
+        BASE_PATH / "data" / "honda.jpeg")
     assert exists is True
     assert name == '2019_Honda_Jazz_1.5_E_(21).jpg'
-    exists, name = upload.check_if_image_exists(BASE_PATH / "./data/testhash.jpg")
+    exists, name = upload.check_if_image_exists(
+        BASE_PATH / "./data/testhash.jpg")
     assert exists is False
     assert name is None
+
+
+def test_upload_same_hash():
+    item = upload.CommonsItem(
+        title="new honda", description="desc", path=BASE_PATH / "data" / "honda.jpeg")
+    site = pywikibot.Site('commons:test')
+    res = upload.upload_image(item=item, site=site,
+                              update_existing=False, dry_run=True)
+    assert res is False
+
+
+def test_upload_new_file(prepare_test_data):
+    item = upload.CommonsItem(
+        title="new random", description="desc", path=BASE_PATH / "./data/testhash.jpg")
+    site = pywikibot.Site('commons:test')
+    res = upload.upload_image(item=item, site=site,
+                              update_existing=False, dry_run=True)
+    assert res is True

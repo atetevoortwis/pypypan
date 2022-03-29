@@ -63,15 +63,17 @@ def upload_image(item: CommonsItem, site: pywikibot.Site, update_existing: bool 
                     item.path.name, str(site)))
                 return False
         else:
-            if dry_run:
-                return True
+            # check if the image (hash based) already exists
+            exists, name = check_if_image_exists(item.path)
+            if exists:
+                logging.info("Skipping upload of {} since a file with the same SHA1 hash exists: {}".format(
+                    item.title, name))
+                return False
             else:
-                # check if the image (hash based) already exists
-                exists, name = check_if_image_exists(item.path)
-                if exists:
-                    logging.info("Skipping upload of {} since a file with the same SHA1 hash exists: {}".format(
-                        item.title, name))
-                return site.upload(filepage=imagepage, source_filename=item.path, ignore_warnings=True)
+                if dry_run:
+                    return True
+                else:
+                    return site.upload(filepage=imagepage, source_filename=item.path, ignore_warnings=True)
 
     except Exception as e:
         logging.exception(e)
