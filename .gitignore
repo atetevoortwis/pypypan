@@ -1,1 +1,4 @@
 user-config.py
+apicache-py3/*
+user-password.py
+*/__pycache__/*
