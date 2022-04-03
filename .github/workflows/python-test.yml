@@ -82,5 +82,13 @@ jobs:
         run: |
           poetry run pytest
 
+      # Coverage
+      - if: matrix.python-version == '3.10'
+        run: |
+          poetry run pytest --cache-clear --cov=pypypan test/ > pytest-coverage.txt
+      - if: matrix.python-version == '3.10'
+        name: Comment coverage
+        uses: coroo/pytest-coverage-commentator@v1.0.2
+        
       - name: Build
         run: poetry build
